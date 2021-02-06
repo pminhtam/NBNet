@@ -42,15 +42,21 @@ class SSA(nn.Module):
         out1 = self.relu2(self.conv2(out1))
         out2 = self.conv11(cat)
         conv = (out1 + out2).permute(0, 2, 3, 1)
-        H, W, K = conv.shape[1], conv.shape[2], conv.shape[3]
-        V = conv.reshape(H * W, K)
-        Vtrans = torch.transpose(V, 1, 0)
-        Vinverse = torch.inverse(torch.mm(Vtrans, V))
-        Projection = torch.mm(torch.mm(V, Vinverse), Vtrans)
-        H1, W1, C1 = input1.shape[1], input1.shape[2], input1.shape[3]
-        X1 = input1.reshape(H1 * W1, C1)
-        Yproj = torch.mm(Projection, X1)
-        Y = Yproj.reshape(H1, W1, C1).unsqueeze(0)
+        H, W, K, batch_size = conv.shape[1], conv.shape[2], conv.shape[3],conv.shape[0]
+        # print(conv.shape)
+        V = conv.reshape(batch_size,H * W, K)
+        # print("V  : ",V.shape)
+        Vtrans = torch.transpose(V, 2, 1)
+        # Vtrans = V.transpose(2, 1)
+        # print("Vtrans  : ",Vtrans.shape)
+        Vinverse = torch.inverse(torch.bmm(Vtrans, V))
+        Projection = torch.bmm(torch.bmm(V, Vinverse), Vtrans)
+        # print("Projection  : ",Projection.shape)
+        H1, W1, C1,batch_size = input1.shape[1], input1.shape[2], input1.shape[3], input1.shape[0]
+        X1 = input1.reshape(batch_size, H1 * W1, C1)
+        # print("X1  : ",X1.shape)
+        Yproj = torch.bmm(Projection, X1)
+        Y = Yproj.reshape(batch_size, H1, W1, C1)
         Y = Y.permute(0, 3, 1, 2)
         return Y
 
