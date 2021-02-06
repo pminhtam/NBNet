@@ -52,7 +52,7 @@ def train(args):
         print('=> no checkpoint file to be loaded.')
     else:
         try:
-            checkpoint = load_checkpoint(checkpoint_dir, device == 'cuda', 'latest')
+            checkpoint = load_checkpoint(checkpoint_dir, device == 'cuda', args.load_type)
             start_epoch = checkpoint['epoch']
             global_step = checkpoint['global_iter']
             best_loss = checkpoint['best_loss']
@@ -128,6 +128,7 @@ if __name__ == "__main__":
     parser.add_argument('--cuda', '-c', action='store_true', help='whether to train on the GPU')
     parser.add_argument('--checkpoint', '-ckpt', type=str, default='checkpoints',
                         help='the checkpoint to eval')
+    parser.add_argument('--load_type', "-l" ,default="best", type=str, help='Load type best_or_latest ')
 
     args = parser.parse_args()
     #
