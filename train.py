@@ -16,7 +16,7 @@ from utils.metric import calculate_psnr
 from utils.training_util import save_checkpoint,MovingAverage, load_checkpoint
 # from collections import OrderedDict
 import torch.nn as nn
-
+torch.backends.cudnn.enabled = False
 
 def train(args):
     torch.set_num_threads(args.num_workers)
